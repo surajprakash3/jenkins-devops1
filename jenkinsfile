@@ -1,0 +1,19 @@
+pipeline{
+    agent any
+
+    environment{
+
+        DODKER_IMAGE ='surajprakash1/jenkins_devops'
+        DOCKER_TAG = 'latest'
+        CONTAINER_NAME='jenkins_devops_container'
+        PORT='8080'
+    }
+    STAGES{
+        stages('clone code'){
+            steps{
+                git branch: 'main'
+                
+            }
+        }
+    }
+}
