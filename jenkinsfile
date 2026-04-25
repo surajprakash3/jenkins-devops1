@@ -1,18 +1,57 @@
-pipeline{
+pipeline {
     agent any
 
-    environment{
-
-        DODKER_IMAGE ='surajprakash1/jenkins_devops'
+    environment {
+        DOCKER_IMAGE = 'surajprakash1/jenkins_devops'
         DOCKER_TAG = 'latest'
-        CONTAINER_NAME='jenkins_devops_container'
-        PORT='8080'
+        CONTAINER_NAME = 'jenkins_devops_container'
+        PORT = '8080'
     }
-    STAGES{
-        stages('clone code'){
-            steps{
-                git branch: 'main'
-                
+
+    stages {
+
+        stage('Clone Code') {
+            steps {
+                git branch: 'main',
+                url: 'https://github.com/surajprakash3/jenkins-devops1.git'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh 'npm install'
+            }
+        }
+
+        stage('Run Test Cases') {
+            steps {
+                sh 'npm test'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub',
+                    usernameVariable: 'DOCKER_USERNAME',
+                    passwordVariable: 'DOCKER_PASSWORD'
+                )])
+                {
+                    sh "
+                    echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+                    docker push ${DOCKER_IMAGE}:${DOCKER_TAG}
+                    "
+
+
+                    // sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
+                    // sh "docker push ${DOCKER_IMAGE}:${DOCKER_TAG}"
+                }
             }
         }
     }
