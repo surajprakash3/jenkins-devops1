@@ -1,36 +1,27 @@
-// import express from 'express';
-
-// const app = express();
-
-
-// app.get('/', async (req , res)=>{
-// res.send(`
-// <h1>Welcome to the app</h1>
-// <h2>Name: Suraj Prakash</h2>
-// `)
-// })
-// module.exports=app;
-
-
-// app.listen(8000, () => {
-// console.log('Server is running on port 8000');
-// })
-
-
-import express from 'express';
+import express from "express";
 
 const app = express();
 
-app.get('/', async (req, res) => {
-    res.send(`<h1>Welcome to the app</h1>
+app.get("/", async (req, res) => {
+  res.send(`<h1>Welcome to the app</h1>
 <h2>Name: Suraj Prakash</h2>`);
 });
 
-export default app;   // ✅ FIXED
+app.get("/add", async (req, res) => {
+  const { num1, num2 } = req.body;
 
-// Only start server if not in test
-if (process.env.NODE_ENV !== 'test') {
-    app.listen(8000, () => {
-        console.log('Server is running on port 8000');
-    });
+  if (num1 !== Number || num2 !== Number) {
+    res
+      .status(400)
+      .json({ error: "Invalid input. Both num1 and num2 should be numbers." });
+  }
+  return res.json({ result: num1 + num2 });
+});
+
+module.export = app;
+
+if (require.main === module) {
+  app.listen(8000, () => {
+    console.log("Server is running on port 8000");
+  });
 }

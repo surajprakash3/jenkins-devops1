@@ -1,13 +1,26 @@
+const request = require('supertest');
+const app = require('./app'); // your express app
 
-const request = require("supertest");
-const app = require("../index");
+describe('GET /add', () => {
 
-describe("test the api", () => {
-  test("test get method api", async () => {
-    const res = await request(app).get("/");
-    expect(res.statusCode).toBe(200);
-    expect(res.text.replace(/\s+/g, " ").trim()).toBe(
-      "<h1>Welcome to the app</h1> <h2>Name: suraj prakash</h2>",
-    );
-  });
+    it('should return sum of two numbers', async () => {
+        const res = await request(app)
+            .get('/add')
+            .send({ num1: 5, num2: 3 });
+
+        expect(res.statusCode).toBe(200);
+        expect(res.body.result).toBe(8);
+    });
+
+    it('should return error if inputs are not numbers', async () => {
+        const res = await request(app)
+            .get('/add')
+            .send({ num1: "a", num2: 3 });
+
+        expect(res.statusCode).toBe(400);
+        expect(res.body.error).toBe(
+            "Invalid input. Both num1 and num2 should be numbers."
+        );
+    });
+
 });
